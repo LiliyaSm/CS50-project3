@@ -1,23 +1,66 @@
-{% extends "menu/base.html" %}
-
-{% block title %}
-Pizza
-{% endblock %}
-
+{% extends "menu/base.html" %} {% block title %} Pizza {% endblock %} 
 {% block body %}
-    
-<h1>Hello, {{ user.first_name }}</h1>
-<ul>
-    <li>Currently logged in as: {{ user.username }}</li>
-    <li><a href="{% url 'logout' %}">Logout</a></li>
-</ul>
 
-    Menu
-    <ul>{% for item in items %}
-        <li>
-            {{ item }}
+<section class="text-center mb-4 ">
+    <!--Grid row-->
+    <div class="row ">
+        <!--Grid column-->
+        {% for item in items %}
+        
+        <div class="col-lg-3 col-md-6 mb-4">
+            <!--Card-->
+            <div class="card h-100">
+                <!--Card image-->
+                    <img
+                        src="static/img/{{ item.group }}.jpg"
+                        class="card-img-top"
+                        alt="{{ item.group }}"
+                    />
 
-        </li>
+                <!--Card image-->
+
+                <!--Card content-->
+                <div class="card-body text-center" data-id = "{{ item.id }}" data-price="priceForSmall" >
+                    <!--Category & Title-->
+                    
+                    <h5 class="group grey-text"> {{ item.group }}  </h5>
+                    <h5> {{ item.name }}</h5>
+                    
+                    {% if item.priceForLarge  %}
+                    <!--size choice-->
+                    <form method="post" class="pretty p-default p-round">
+
+                        <div class="">Select Product Size</div>
+                        <input
+                            type="radio"
+                            name="type"
+                            value="priceForSmall"
+                            data-price="{{ item.priceForSmall }}"
+                            checked
+                        />
+                        <label>Small</label>
+                        
+                        <input
+                        type="radio"
+                        name="type"
+                        value="priceForLarge"
+                        data-price="{{ item.priceForLarge }}"
+                        />
+                        <label>Large</label>
+                        
+                    </form>
+                    {% endif %}
+                    <!--size choice-->
+                    <h4 >
+                        <strong class="price">{{item.priceForSmall }}</strong>
+                    </h4>
+
+                </div>
+                <button class="btn btn-secondary">ADD TO CART</button>
+                <!--Card content-->
+            </div>
+        </div>
         {%endfor%}
-    </ul>
+    </div>
+</section>
 {% endblock %}

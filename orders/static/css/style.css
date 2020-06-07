@@ -1,0 +1,37 @@
+
+
+.site-header {
+    background-color: #929fba;
+}
+
+.site-header a {
+    text-decoration: none;
+    color: white;
+}
+
+.site-header {
+    color: white;
+    
+}
+
+.cart{
+    text-transform: uppercase;
+
+}
+
+.hide { 
+    display: none;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: cover;
+}   
+
+@media (max-width: 1000px) { 
+    .card-img-top {
+    height: 45vw;
+    }   
+
+ }
