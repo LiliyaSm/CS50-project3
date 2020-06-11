@@ -34,7 +34,7 @@
                 <!--Navbar-->
                 <nav class="navbar navbar-expand-lg navbar-dark mt-3 mb-5">
                     <!-- Navbar brand -->
-                    <span class="navbar-brand">Pinocchio's Pizza</span>
+                    <a href=" {% url 'index' %}" ><span class="navbar-brand">Pinocchio's Pizza</span></a>
 
                     <!-- Collapse button -->
                     <button
@@ -84,7 +84,7 @@
                         </ul>
                          {% endif %}
                         <div class="cart my-0">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'cart' %}">
                                 <!-- <span class="badge red z-depth-1 mr-1"> 1 </span> -->
                                 <img
                                     src="{% static 'img/cart.png' %}"

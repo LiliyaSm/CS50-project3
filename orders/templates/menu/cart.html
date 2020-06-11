@@ -1,0 +1,59 @@
+{% extends "menu/base.html" %} {% block title %} Cart {% endblock %} 
+{% block body %}
+
+<div class="container">
+    <div class="title">
+        Shopping cart
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Name</th>
+                <th scope="col">Price for one</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ordereditem in itemorders %}
+            <tr>
+                <td scope="row">
+                    <div class="buttons">
+                        <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </td>
+                <td>
+                    <span>{{ ordereditem.item.group }}</span>
+                    <span>{{ ordereditem.item.name }}</span>
+                    <span>TODO size</span>
+                </td>
+                <td>{{ ordereditem.price }}</td>
+                <td>
+                    <form method="POST" class="counter">
+                        {% csrf_token %}
+                        <span class="minus">–</span>
+                        <input
+                            class="amount"
+                            type="text"
+                            placeholder="value..."
+                            value="{{ ordereditem.quantity }}"
+                        />
+                        <span class="plus">+</span>
+                    </form>
+                </td>
+                <td>{{ ordereditem.calc_price }}</td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+<div class="confirm">
+    <button class="add-cart btn btn-secondary ml-3" type="submit">CONFIRM ORDER</button>
+        <h4 class="total-price">Total {{ total }}</h4>
+</div> 
+
+</div>
+{% endblock %}

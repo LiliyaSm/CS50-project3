@@ -16,15 +16,14 @@
                         class="card-img-top"
                         alt="{{ item.group }}"
                     />
-
                 <!--Card image-->
 
                 <!--Card content-->
-                <div class="card-body text-center" data-id = "{{ item.id }}" data-price="priceForSmall" >
+                <div class="info" data-id = "{{ item.id }}" data-price="priceForSmall" >
                     <!--Category & Title-->
                     
-                    <h5 class="group grey-text"> {{ item.group }}  </h5>
-                    <h5> {{ item.name }}</h5>
+                    <h5 class="group"> {{ item.group }}  </h5>
+                    <h5> {{ item.name }} </h5>
                     
                     {% if item.priceForLarge  %}
                     <!--size choice-->
@@ -53,10 +52,18 @@
                     <!--size choice-->
                     <h4 >
                         <strong class="price">{{item.priceForSmall }}</strong>
-                    </h4>
-
+                    </h4>                    
+                    
+                    <form method="POST" class="counter">
+                        {% csrf_token %}
+                        <span class="minus">–</span>
+                        <input class='amount' type="text" placeholder="value..." value='1' />  
+                        <span class="plus">+</span>
+                        <button class="add-cart btn btn-secondary ml-3" type="submit">ADD TO CART</button>
+                    </form>
                 </div>
-                <button class="btn btn-secondary">ADD TO CART</button>
+
+
                 <!--Card content-->
             </div>
         </div>
