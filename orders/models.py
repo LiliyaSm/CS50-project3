@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete
 from decimal import Decimal
+
 
 # Create your models here.
 class dishType(models.Model):
@@ -19,10 +20,10 @@ class Item(models.Model):
     name = models.CharField(max_length=64)
     group = models.ForeignKey(
         dishType, on_delete=models.CASCADE, related_name="group", null=True)
-    # style = models.CharField(max_length=10, choices=STYLES)
     priceForSmall = models.DecimalField(max_digits=6, decimal_places=2)
     priceForLarge = models.DecimalField(
         max_digits=6, decimal_places=2, default=Decimal(0))
+
 
 
 
@@ -57,20 +58,25 @@ class ItemOrder(models.Model):
     price = models.DecimalField(default=Decimal(0), max_digits=10, decimal_places=2)
     calc_price = models.DecimalField(
         max_digits=6, decimal_places=2, default=Decimal(0))
+    size = models.CharField(max_length=15, default="One size")
 
 
     def __str__(self):
         return f"{self.item}"
 
 
-@receiver(post_save, sender=ItemOrder)
-def update_cart(sender, instance, **kwargs): #post_delete
-    instance.cart.total += instance.calc_price
-    instance.cart.save()
+# @receiver(post_save, sender=ItemOrder)
+# def update_cart(sender, instance, **kwargs): 
+#     instance.cart.total += instance.calc_price
+#     instance.cart.save()
 
     # instance.cart.count += instance.quantity
     # instance.cart.updated = datetime.now()
 
+@receiver(post_delete, sender=ItemOrder)
+def delete_item(sender, instance, **kwargs): 
+    instance.cart.total -= instance.calc_price
+    instance.cart.save()
 
 
 

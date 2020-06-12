@@ -13,12 +13,12 @@
                 <th scope="col">Name</th>
                 <th scope="col">Price for one</th>
                 <th scope="col">Amount</th>
-                <th scope="col">Price</th>
+                <th style="width: 16.66%" scope="col">Price</th>
             </tr>
         </thead>
         <tbody>
             {% for ordereditem in itemorders %}
-            <tr>
+            <tr data-id = " {{ordereditem.id}} ">
                 <td scope="row">
                     <div class="buttons">
                         <button type="button" class="close" aria-label="Close">
@@ -29,7 +29,7 @@
                 <td>
                     <span>{{ ordereditem.item.group }}</span>
                     <span>{{ ordereditem.item.name }}</span>
-                    <span>TODO size</span>
+                    <span>{{ ordereditem.size }}</span>
                 </td>
                 <td>{{ ordereditem.price }}</td>
                 <td>
@@ -41,18 +41,19 @@
                             type="text"
                             placeholder="value..."
                             value="{{ ordereditem.quantity }}"
+                            readonly
                         />
                         <span class="plus">+</span>
                     </form>
                 </td>
-                <td>{{ ordereditem.calc_price }}</td>
+                <td  class="calc_price">{{ ordereditem.calc_price }}</td>
             </tr>
             {%endfor%}
         </tbody>
     </table>
 <div class="confirm">
-    <button class="add-cart btn btn-secondary ml-3" type="submit">CONFIRM ORDER</button>
-        <h4 class="total-price">Total {{ total }}</h4>
+     <h4 > Total <span class="total-price">  {{ total }} </span> </h4>
+    <button class="add-cart btn btn-secondary my-3" type="submit">CONFIRM ORDER</button>
 </div> 
 
 </div>

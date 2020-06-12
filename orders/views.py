@@ -5,7 +5,9 @@ from django.urls import reverse
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import Item, Cart, ItemOrder
 from django.contrib import messages
-
+from django.http import HttpResponse
+import json
+import decimal
 # from django.http import JsonResponse
 
 # Create your views here.
@@ -29,59 +31,118 @@ def getEvents (request):
 
 
 def add_to_cart(request):
+    """adding items on the main page"""
     item_id = request.POST.get("id", "")
     priceType = request.POST.get("price", "")
     amount = request.POST.get("amount", "")
+    user = request.user
 
     item = get_object_or_404(Item, pk=item_id)
 
-    user = request.user
+    size = "Large"
+    if priceType == "priceForSmall":
+        if not getattr(item, "priceForLarge"):
+            size = "One size"
+        else:
+            size = "Small"
+
 
     # price for small or large
     price = getattr(item, priceType)
     print(price, item_id, amount, user)
-
+    
 
     cart, created = Cart.objects.get_or_create(user=request.user)
     order, created = ItemOrder.objects.get_or_create(
-        item=item, cart=cart, price=price)
+        item=item, cart=cart, price=price, size=size)
 
     order.quantity += int(amount)
-    order.calc_price = order.quantity * price
+    order.calc_price += int(amount) * price
     order.save()
+
+    cart.total += int(amount) * price
+    cart.save()
     # messages.success(request, "Cart updated!")
     return False
 
 
-    #    return HttpResponse(
-    #        json.dumps(response_data),
-    #        content_type="application/json"
-    #    )
+
+def delete_item(request):
+    '''delete items from cart on the cart page'''
+    user = request.user
+    id = request.POST.get("id", "")
+    item = ItemOrder.objects.get(cart__user=user, id=id)
+    item.delete()
+    cart = Cart.objects.get(user=user)
+    response_data = {"new_total": cart.total}
+    return HttpResponse(
+        json.dumps(response_data, cls=DecimalEncoder),
+        content_type="application/json"
+    )
+
+    # deleted_item.remove()
+    # Cart.objects.get(user=user)
+
+# shopping_cart.items.remove(item)
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
+
+def update_cart(request):
+    """changing items amount on the cart page"""
+    user = request.user
+    line_id = request.POST.get("id", "")
+    new_amount = int(request.POST.get("amount", ""))
+    changed_item = ItemOrder.objects.get(cart__user=user, id=line_id)
+    cart = Cart.objects.get(user=user)
+    new_price = new_amount * changed_item.price
+
+    if changed_item.quantity > new_amount:
+        cart.total -= changed_item.price
+    elif changed_item.quantity < new_amount:
+        cart.total += changed_item.price
+    else:
+        return HttpResponse(
+            content_type="application/json"
+        )
+
+    # rewrite amount and total price for this product
+    changed_item.quantity = new_amount
+    changed_item.calc_price = new_price    
+    changed_item.save()
 
 
-
-def remove_from_cart(request):
-    '''delete items from cart on cart page'''
-
-    order = get_object_or_404(ItemOrder, pk=item_id)
+    cart.save()
+    new_total = Cart.objects.get(user=user).total
+    response_data = {"new_price": new_price, "new_total": new_total}
+    return HttpResponse(
+        json.dumps(response_data, cls=DecimalEncoder),
+        content_type="application/json"
+    )
 
 def cart(request):
     """shopping cart page with order"""
 
     user = request.user
-    items_o = ItemOrder.objects.filter(cart__user=user)
+    items_user = ItemOrder.objects.filter(cart__user=user)
     total = Cart.objects.get(user=user).total
-    items_1 = items_o.select_related('item')
+    items = items_user.select_related('item')
     # for p in items_1:
     #     print(p.cart.total)
     print(total)
     # quantity = items_o.values("total")
    
     context = {
-        "itemorders": items_1,
+        "itemorders": items,
         "total": total
     }
     return render(request, "menu/cart.html", context)
+
+
+
 
 
 # share = Share.objects.get(shared_user_id=log_id)
