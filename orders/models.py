@@ -22,7 +22,8 @@ class Item(models.Model):
     group = models.ForeignKey(
         dishType, on_delete=models.CASCADE, related_name="group", null=True)
     #connection beetwen dish and topping asymmetr, we need add toppings to dish, not vice versa
-    items = models.ManyToManyField("self", symmetrical=False, null=True)
+    items = models.ManyToManyField("self", symmetrical=False, blank=True)
+    hasToppings = models.BooleanField(default=False)
     priceForSmall = models.DecimalField(max_digits=6, decimal_places=2)
     priceForLarge = models.DecimalField(
         max_digits=6, decimal_places=2, default=Decimal(0))

@@ -42,7 +42,7 @@ def add_to_cart(request):
     """adding items on the main page"""
     item_id = request.POST.get("id", "")
     priceType = request.POST.get("price", "")
-    amount = request.POST.get("amount", "")
+    # amount = request.POST.get("amount", "")
     user = request.user
 
     item = get_object_or_404(Item, pk=item_id)
@@ -57,18 +57,18 @@ def add_to_cart(request):
 
     # price for small or large
     price = getattr(item, priceType)
-    print(price, item_id, amount, user)
+    print(price, item_id, user)
     
 
     cart, created = Cart.objects.get_or_create(user=request.user)
     order, created = ItemOrder.objects.get_or_create(
         item=item, cart=cart, price=price, size=size)
 
-    order.quantity += int(amount)
-    order.calc_price += int(amount) * price
+    order.quantity += 1
+    order.calc_price += price
     order.save()
 
-    cart.total += int(amount) * price
+    cart.total +=  price
     cart.save()
     return HttpResponse(
         content_type="application/json"

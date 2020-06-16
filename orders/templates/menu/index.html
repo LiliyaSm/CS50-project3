@@ -53,7 +53,7 @@
 
                     {% if item.priceForLarge %}
                     <!--size choice-->
-                    <form method="post" class="pretty p-default p-round">
+                    <form method="post">
                         <div class="">Select Product Size</div>
                         <input
                             type="radio"
@@ -78,59 +78,60 @@
                         <strong class="price">{{item.priceForSmall }}</strong>
                     </h4>
 
-                    <form method="POST" class="counter">
+                    {% if item.hasToppings%}
+
+                    <button
+                        class="choose-toppings btn btn-secondary"
+                        type="submit"
+                    >
+                        ADD TO CART
+                    </button>
+                    {%else%}
+                    <form method="POST" class="add-cart">
                         {% csrf_token %}
-                        <span class="minus">–</span>
-                        <input
-                            class="amount"
-                            type="text"
-                            placeholder="value..."
-                            value="1"
-                        />
-                        <span class="plus">+</span>
                         <button
-                            class="add-cart btn btn-secondary ml-3"
+                            class="btn btn-secondary"
                             type="submit"
                         >
                             ADD TO CART
                         </button>
                     </form>
+                    {%endif%}
 
-                <div class="toppings hide p-4">
-                    <button type="button" class="close" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="name"></h4>
-                    <h3>choose toppings:</h3>
-                    <form method="POST" class="counter">
-                        {% csrf_token %}
-                        <div class="row mt-4">
-                            {% for topping in item.items.all %}
-                            <div class="col-lg-4 col-md-4 mb-4 d-flex">
-                                {{ topping.name }}
-                                <span class="minus">–</span>
-                                <input
-                                    class="amount"
-                                    type="text"
-                                    placeholder="value..."
-                                    value="0"
-                                />
-                                <span class="plus">+</span>
+                    <!--Card content-->
+                   {% if item.hasToppings%}
+                    <div data-id="{{ item.id }}" class="toppings hide p-4">
+                        <button type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="name">{{item.group}} {{item.name}}</h4>
+                        <h3>choose toppings:</h3>
+                        <form method="POST" class="cart-toppings">
+                            {% csrf_token %}
+                            <div class="row mt-4">
+                                {% for topping in item.items.all %}
+                                <div class="col-lg-4 col-md-4 mb-4 d-flex">
+                                    <span>{{ topping.name }}</span>
+                                    <span class="minus">–</span>
+                                    <input
+                                        class="amount"
+                                        type="text"
+                                        placeholder="value..."
+                                        value="0"
+                                    />
+                                    <span class="plus">+</span>
+                                </div>
+                                {%endfor%}
                             </div>
-                            {%endfor%}
-                        </div>
-                    </form>
-                    <button
-                        class="add-cart btn btn-secondary ml-3"
-                        type="submit"
-                    >
-                        ADD TO CART
-                    </button>
-
-                </div>
-
-                <!--Card content-->
-
+                        </form>
+                        <button
+                            class="btn btn-secondary ml-3"
+                            type="submit"
+                        >
+                            ADD TO CART
+                        </button>
+                    </div>
+                    {%endif%}
                 </div>
             </div>
         </div>

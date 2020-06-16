@@ -16,18 +16,17 @@ $(document).ready(function () {
     $(".type:contains('topping')").parent().append(
         "<span class='badge-pill'>add toppings!</span>"
     );
-    $(".group:contains('Pizza')").parent().find(".badge-pill").on("click", function (e) {
+    $(".choose-toppings").on("click", function (e) {
         const card = $(this).closest(".info");
         const id = card.data("id");
-        const group = card.find(".group").text()
-        $(".name").text(group)
-        card.find(".toppings").removeClass("hide");
+        // const group = card.find(".group").text()
+        const toppings = $(".toppings").closest(`[data-id = ${id}]`);
 
-    })
-    ;
+        // toppings.find(".name").text(group);
+        toppings.removeClass("hide");
+    });
     //press add to card button
-    $(".counter").on("submit", function (e) {
-
+    $(".add-cart").on("submit", function (e) {
         //  setting up AJAX to pass CSRF token
         function getCookie(name) {
             var cookieValue = null;
@@ -61,20 +60,15 @@ $(document).ready(function () {
 
         e.preventDefault();
         const card = $(this).closest(".info");
-        
+
         // .data() gets only cached price
         const price = card.attr("data-price");
-        const amount = $(this).parent().find(".amount").val();
+        // const amount = $(this).parent().find(".amount").val();
         const id = card.data("id");
-        
 
-        $.post(
-            "add_to_cart/",
-            { id: id, price: price, amount: amount },
-            function (response) {
-                console.log(response);
-            }
-        );
+        $.post("add_to_cart/", { id: id, price: price }, function (response) {
+            console.log(response);
+        });
     });
 
 
