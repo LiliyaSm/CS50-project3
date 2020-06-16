@@ -1,34 +1,59 @@
-{% extends "menu/base.html" %} {% block title %} Pizza {% endblock %} 
-{% block body %}
+{% extends "menu/base.html" %} {% block title %} Pizza {% endblock %} {%block filter%}
 
-<section class="text-center mb-4 ">
+<li class="nav-item active">
+    <a class="nav-link" data-group="All" href="#">Full menu </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" data-group="Pizza" href="#">Pizza</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" data-group="Subs" href="#">Subs</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" data-group="Pasta" href="#">Pasta</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" data-group="Salads" href="#">Salads</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" data-group="Dinner Platters" href="#"
+        >Dinner Platters</a
+    >
+</li>
+<li class="nav-item"></li>
+{%endblock%} {% block body %}
+
+<section class="text-center mb-4">
     <!--Grid row-->
-    <div class="row ">
+    <div class="row">
         <!--Grid column-->
         {% for item in items %}
-        
+
         <div class="col-lg-3 col-md-6 mb-4">
             <!--Card-->
             <div class="card h-100">
                 <!--Card image-->
-                    <img
-                        src="static/img/{{ item.group }}.jpg"
-                        class="card-img-top"
-                        alt="{{ item.group }}"
-                    />
+                <img
+                    src="static/img/{{ item.group }}.jpg"
+                    class="card-img-top"
+                    alt="{{ item.group }}"
+                />
                 <!--Card image-->
 
                 <!--Card content-->
-                <div class="info" data-id = "{{ item.id }}" data-price="priceForSmall" >
+                <div
+                    class="info"
+                    data-id="{{ item.id }}"
+                    data-price="priceForSmall"
+                >
                     <!--Category & Title-->
-                    
-                    <h5 class="group"> {{ item.group }}  </h5>
-                    <h5> {{ item.name }} </h5>
-                    
-                    {% if item.priceForLarge  %}
+
+                    <h5 class="group">{{ item.group }}</h5>
+                    <h5 class="type">{{ item.name }}</h5>
+
+                    {% if item.priceForLarge %}
                     <!--size choice-->
                     <form method="post" class="pretty p-default p-round">
-
                         <div class="">Select Product Size</div>
                         <input
                             type="radio"
@@ -38,35 +63,78 @@
                             checked
                         />
                         <label>Small</label>
-                        
+
                         <input
-                        type="radio"
-                        name="type"
-                        value="priceForLarge"
-                        data-price="{{ item.priceForLarge }}"
+                            type="radio"
+                            name="type"
+                            value="priceForLarge"
+                            data-price="{{ item.priceForLarge }}"
                         />
                         <label>Large</label>
-                        
                     </form>
                     {% endif %}
                     <!--size choice-->
-                    <h4 >
+                    <h4>
                         <strong class="price">{{item.priceForSmall }}</strong>
-                    </h4>                    
-                    
+                    </h4>
+
                     <form method="POST" class="counter">
                         {% csrf_token %}
                         <span class="minus">–</span>
-                        <input class='amount' type="text" placeholder="value..." value='1' />  
+                        <input
+                            class="amount"
+                            type="text"
+                            placeholder="value..."
+                            value="1"
+                        />
                         <span class="plus">+</span>
-                        <button class="add-cart btn btn-secondary ml-3" type="submit">ADD TO CART</button>
+                        <button
+                            class="add-cart btn btn-secondary ml-3"
+                            type="submit"
+                        >
+                            ADD TO CART
+                        </button>
                     </form>
+
+                <div class="toppings hide p-4">
+                    <button type="button" class="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="name"></h4>
+                    <h3>choose toppings:</h3>
+                    <form method="POST" class="counter">
+                        {% csrf_token %}
+                        <div class="row mt-4">
+                            {% for topping in item.items.all %}
+                            <div class="col-lg-4 col-md-4 mb-4 d-flex">
+                                {{ topping.name }}
+                                <span class="minus">–</span>
+                                <input
+                                    class="amount"
+                                    type="text"
+                                    placeholder="value..."
+                                    value="0"
+                                />
+                                <span class="plus">+</span>
+                            </div>
+                            {%endfor%}
+                        </div>
+                    </form>
+                    <button
+                        class="add-cart btn btn-secondary ml-3"
+                        type="submit"
+                    >
+                        ADD TO CART
+                    </button>
+
                 </div>
 
-
                 <!--Card content-->
+
+                </div>
             </div>
         </div>
+
         {%endfor%}
     </div>
 </section>

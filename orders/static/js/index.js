@@ -1,11 +1,30 @@
+
+jQuery.fn.center = function () {
+    this.css("position","absolute");
+    this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + 
+                                                $(window).scrollTop()) + "px");
+    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + 
+                                                $(window).scrollLeft()) + "px");
+    return this;
+}
+
+
 $(document).ready(function () {
 
 
     // add badge for pizzas
-    $(".group:contains('Pizza')").append(
+    $(".type:contains('topping')").parent().append(
         "<span class='badge-pill'>add toppings!</span>"
     );
+    $(".group:contains('Pizza')").parent().find(".badge-pill").on("click", function (e) {
+        const card = $(this).closest(".info");
+        const id = card.data("id");
+        const group = card.find(".group").text()
+        $(".name").text(group)
+        card.find(".toppings").removeClass("hide");
 
+    })
+    ;
     //press add to card button
     $(".counter").on("submit", function (e) {
 
@@ -59,7 +78,7 @@ $(document).ready(function () {
     });
 
 
-    //choosing price small or large
+    //choosing price small or large on main page
     $("input[name=type]").on("click", function () {
         //radio button choice
         const type = $(this).val();
@@ -73,7 +92,7 @@ $(document).ready(function () {
     });
     
 
-    // filter
+    // filter on the main page
     $(".groups .nav-link").on("click", function () {
         // hightlight chosen category on nav bar
         $(".groups").find(".active").removeClass("active");
@@ -112,7 +131,7 @@ $(document).ready(function () {
 
 
 
-
+//if changes amount it will change price and total sum in the cart
     $("td .amount").change(function () {
         const amount = $(this).val();
         const line_id = $(this).closest("tr").data("id")
@@ -164,11 +183,13 @@ $(document).ready(function () {
 
     });
 
+    $(".toppings .close").click(function () {
+    $(this).parent(".toppings").addClass("hide")
+    })
 
 
-
-
-    $("button.close").click(function () {
+// delete item from cart
+    $(".cart.close").click(function () {
 
         const line_id = $(this).closest("tr").data("id");        
         $(this).closest("tr").remove()

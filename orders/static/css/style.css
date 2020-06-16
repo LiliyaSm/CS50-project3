@@ -41,6 +41,7 @@
     top: 5%;
     left: 5%;
     text-transform: uppercase;
+    cursor: pointer;
 }
 
 .info {
@@ -107,3 +108,14 @@
 
 .table td{
     vertical-align: middle ;}
+
+
+.toppings {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color:#d4ffd4;
+    border: 3px solid rgba(0,0,0,.3);
+    border-radius: 5px;     
+}

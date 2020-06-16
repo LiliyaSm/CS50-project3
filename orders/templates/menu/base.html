@@ -52,27 +52,8 @@
                     <!-- Collapsible content -->
                     <div class="collapse navbar-collapse" id="basicExampleNav">
                         <!-- Links -->
-                        <ul class="navbar-nav mr-auto groups">
-                            <li class="nav-item active">
-                                <a class="nav-link" data-group = "All"  href="#">Full menu </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-group = "Pizza" href="#">Pizza</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-group = "Subs" href="#">Subs</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link"  data-group = "Pasta" href="#">Pasta</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-group = "Salads" href="#">Salads</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-group = "Dinner Platters" href="#">Dinner Platters</a>
-                            </li>
-                            <li class="nav-item"></li>
-                        </ul>
+                        <ul class="navbar-nav mr-auto groups">{%block filter%} {%endblock%}</ul>
+                       
                         <!-- Links -->
                         {% if user.is_authenticated %}
                         <span>{{ user.username }}</span>
@@ -103,27 +84,9 @@
 
             </header>
 
-            {% if messages %}
 
-                {% for message in messages %}
-                <div
-                class="alert text-center alert-{{message.tags}} alert-dismissible fade show"
-                id="chat-alert"
-                role="alert"
-                >
 
-                {{ message }}
-
-                <button type="button" class="close" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                </div>
-
-        {% endfor %}
-
-         
-
-            {% endif %} {% block body %} {% endblock %}
+ {% block body %} {% endblock %}
         </div>
 
         <!-- <script

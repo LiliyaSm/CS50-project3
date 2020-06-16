@@ -16,16 +16,16 @@ class dishType(models.Model):
     def __str__(self):
         return f"{self.dishType}"
 
+
 class Item(models.Model):
     name = models.CharField(max_length=64)
     group = models.ForeignKey(
         dishType, on_delete=models.CASCADE, related_name="group", null=True)
+    #connection beetwen dish and topping asymmetr, we need add toppings to dish, not vice versa
+    items = models.ManyToManyField("self", symmetrical=False, null=True)
     priceForSmall = models.DecimalField(max_digits=6, decimal_places=2)
     priceForLarge = models.DecimalField(
         max_digits=6, decimal_places=2, default=Decimal(0))
-
-
-
 
     def __str__ (self):
         return f"{self.name} {self.group}"
@@ -36,13 +36,19 @@ class Cart(models.Model):
         User, on_delete=models.CASCADE, related_name="user", null=False)
     order_date = models.DateField(null=True)  # auto_now_add=True
     total = models.DecimalField(default=Decimal(0), max_digits=10, decimal_places=2)
+    products = models.ManyToManyField(Item, through='ItemOrder')
+
+
 
     # payment_type = models.CharField(max_length=100, null=True)
     # payment_id = models.CharField(max_length=100, null=True)
 
 
-def __str__(self):
-    return "User: {} has items in their cart. Their total is ${}".format(self.user, self.total)
+    def __str__(self):
+        # return "User: {} has items in their cart. Their total is ${}".format(self.user, self.total)
+        return f"{self.user}"
+
+    
 
 #     def add_to_cart(self, book_id):
 #         item = get_object_or_404(Item, pk=item_id)
@@ -50,7 +56,7 @@ def __str__(self):
 
 class ItemOrder(models.Model):
     item = models.ForeignKey(
-        Item, on_delete=models.CASCADE, related_name="item")
+        Item, on_delete=models.CASCADE, related_name="product")
     cart = models.ForeignKey(
         Cart, on_delete=models.CASCADE, related_name="cart")
 

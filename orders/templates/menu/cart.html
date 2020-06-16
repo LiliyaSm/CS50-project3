@@ -6,6 +6,7 @@
         Shopping cart
     </div>
 
+    {% if itemorders %}
     <table class="table table-striped">
         <thead>
             <tr>
@@ -17,11 +18,12 @@
             </tr>
         </thead>
         <tbody>
+
             {% for ordereditem in itemorders %}
             <tr data-id = " {{ordereditem.id}} ">
                 <td scope="row">
                     <div class="buttons">
-                        <button type="button" class="close" aria-label="Close">
+                        <button type="button" class="cart close" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -49,12 +51,16 @@
                 <td  class="calc_price">{{ ordereditem.calc_price }}</td>
             </tr>
             {%endfor%}
+            
         </tbody>
     </table>
-<div class="confirm">
-     <h4 > Total <span class="total-price">  {{ total }} </span> </h4>
-    <button class="add-cart btn btn-secondary my-3" type="submit">CONFIRM ORDER</button>
-</div> 
+    <div class="confirm">
+         <h4 > Total <span class="total-price">  {{ total }} </span> </h4>
+        <button class="add-cart btn btn-secondary my-3" type="submit">CONFIRM ORDER</button>
+    </div> 
+    {% else %}
+    <h4 class="text-center">Your cart is empty</h4>
+    {% endif %}
 
 </div>
 {% endblock %}

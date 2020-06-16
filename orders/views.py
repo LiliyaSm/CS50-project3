@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import Item, Cart, ItemOrder
-from django.contrib import messages
 from django.http import HttpResponse
 import json
 import decimal
@@ -13,12 +12,21 @@ import decimal
 # Create your views here.
 def index(request):
 
-    items = Item.objects.all()
+    items = Item.objects.exclude(group__dishType="Toppings")
+    for item in items:
+        for linkedItem in item.items.all():
+            print(linkedItem)
+
     
+    toppings = ["Pepperoni",
+                "Sausage",
+                "Mushrooms",
+                "Onions"]
     # p.get_shirt_size_display()
     context = {
         "user": request.user,
-        "items": Item.objects.all() 
+        "items": items,
+        "toppings": toppings
     }
 
     return render(request, "menu/index.html", context)
@@ -62,8 +70,10 @@ def add_to_cart(request):
 
     cart.total += int(amount) * price
     cart.save()
-    # messages.success(request, "Cart updated!")
-    return False
+    return HttpResponse(
+        content_type="application/json"
+    )
+
 
 
 
@@ -113,7 +123,7 @@ def update_cart(request):
     changed_item.quantity = new_amount
     changed_item.calc_price = new_price    
     changed_item.save()
-
+    
 
     cart.save()
     new_total = Cart.objects.get(user=user).total
@@ -127,13 +137,14 @@ def cart(request):
     """shopping cart page with order"""
 
     user = request.user
+    if not Cart.objects.filter(user=user).exists():
+        return render(request, "menu/cart.html", {"total": 0.00})
     items_user = ItemOrder.objects.filter(cart__user=user)
     total = Cart.objects.get(user=user).total
     items = items_user.select_related('item')
     # for p in items_1:
     #     print(p.cart.total)
-    print(total)
-    # quantity = items_o.values("total")
+
    
     context = {
         "itemorders": items,
