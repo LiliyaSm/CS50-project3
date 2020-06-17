@@ -112,24 +112,28 @@
                                 {% for topping in item.items.all %}
                                 <div class="col-lg-4 col-md-4 mb-4 d-flex">
                                     <span>{{ topping.name }}</span>
-                                    <span class="minus">–</span>
-                                    <input
-                                        class="amount"
-                                        type="text"
-                                        placeholder="value..."
-                                        value="0"
-                                    />
-                                    <span class="plus">+</span>
+                                        <div class = "counter">
+                                            <span class="minus">–</span>
+                                            <input
+                                                class="amount"
+                                                type="text"
+                                                placeholder="0"
+                                                min = "0"
+                                                value="0"
+                                                data-idtop="{{ topping.id }}"
+                                            />
+                                            <span class="plus">+</span>
+                                        </div>
                                 </div>
                                 {%endfor%}
                             </div>
+                            <button
+                                class="btn btn-secondary"
+                                type="submit"
+                            >
+                                ADD TO CART
+                            </button>
                         </form>
-                        <button
-                            class="btn btn-secondary ml-3"
-                            type="submit"
-                        >
-                            ADD TO CART
-                        </button>
                     </div>
                     {%endif%}
                 </div>

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-from django.db.models.signals import post_delete
+from django.db.models.signals import pre_delete
 from decimal import Decimal
 
 
@@ -61,6 +61,7 @@ class ItemOrder(models.Model):
     cart = models.ForeignKey(
         Cart, on_delete=models.CASCADE, related_name="cart")
 
+    toppings = models.ManyToManyField("self", symmetrical=False, blank=True)
     quantity = models.PositiveIntegerField(default=0)  # default = 1
     price = models.DecimalField(default=Decimal(0), max_digits=10, decimal_places=2)
     calc_price = models.DecimalField(
@@ -80,10 +81,15 @@ class ItemOrder(models.Model):
     # instance.cart.count += instance.quantity
     # instance.cart.updated = datetime.now()
 
-@receiver(post_delete, sender=ItemOrder)
-def delete_item(sender, instance, **kwargs): 
+@receiver(pre_delete, sender=ItemOrder)
+def delete_item(sender, instance, **kwargs):
+    # before main dish removing from cart delete all related topping objects
+    instance.toppings.all().delete()
+
     instance.cart.total -= instance.calc_price
     instance.cart.save()
+
+
 
 
 

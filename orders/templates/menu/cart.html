@@ -32,6 +32,16 @@
                     <span>{{ ordereditem.item.group }}</span>
                     <span>{{ ordereditem.item.name }}</span>
                     <span>{{ ordereditem.size }}</span>
+                    <br/>
+                    {% for topping in ordereditem.toppings.all %}
+                        <span>{{ topping.item.name }}</span>
+                        <span> x{{ topping.quantity }}</span>
+                    <br/>
+
+
+                    {%endfor%}
+
+
                 </td>
                 <td>{{ ordereditem.price }}</td>
                 <td>
@@ -41,9 +51,9 @@
                         <input
                             class="amount"
                             type="text"
-                            placeholder="value..."
                             value="{{ ordereditem.quantity }}"
-                            readonly
+                            min = "1"
+
                         />
                         <span class="plus">+</span>
                     </form>

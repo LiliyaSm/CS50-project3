@@ -42,7 +42,8 @@ def add_to_cart(request):
     """adding items on the main page"""
     item_id = request.POST.get("id", "")
     priceType = request.POST.get("price", "")
-    # amount = request.POST.get("amount", "")
+    toppings = request.POST.get("toppings", "")    
+
     user = request.user
 
     item = get_object_or_404(Item, pk=item_id)
@@ -61,14 +62,32 @@ def add_to_cart(request):
     
 
     cart, created = Cart.objects.get_or_create(user=request.user)
-    order, created = ItemOrder.objects.get_or_create(
-        item=item, cart=cart, price=price, size=size)
 
-    order.quantity += 1
-    order.calc_price += price
-    order.save()
 
-    cart.total +=  price
+    if toppings:
+        toppings = json.loads(toppings)
+        order = ItemOrder(
+            item=item, cart=cart, price=price, size=size, quantity = 1)
+        order.calc_price += price
+        order.save()
+
+        print(toppings)
+        for key, value in toppings.items():
+            item_top = get_object_or_404(Item, pk=key)
+            topping = ItemOrder(
+                item=item_top, cart=cart, quantity=value)
+            topping.save()
+            order.toppings.add(topping)
+
+    else:
+        order, created = ItemOrder.objects.get_or_create(
+            item=item, cart=cart, price=price, size=size)
+        order.quantity += 1
+        order.calc_price += price
+        order.save()
+
+
+    cart.total += price
     cart.save()
     return HttpResponse(
         content_type="application/json"
@@ -90,8 +109,6 @@ def delete_item(request):
         content_type="application/json"
     )
 
-    # deleted_item.remove()
-    # Cart.objects.get(user=user)
 
 # shopping_cart.items.remove(item)
 
@@ -139,11 +156,10 @@ def cart(request):
     user = request.user
     if not Cart.objects.filter(user=user).exists():
         return render(request, "menu/cart.html", {"total": 0.00})
-    items_user = ItemOrder.objects.filter(cart__user=user)
+    items_user = ItemOrder.objects.filter(
+        cart__user=user).exclude(item__group__dishType="Toppings")
     total = Cart.objects.get(user=user).total
     items = items_user.select_related('item')
-    # for p in items_1:
-    #     print(p.cart.total)
 
    
     context = {
