@@ -45,6 +45,7 @@
                     class="info"
                     data-id="{{ item.id }}"
                     data-price="priceForSmall"
+                    data-toppings="{{ item.hasToppings}}"
                 >
                     <!--Category & Title-->
 
@@ -89,48 +90,75 @@
                     {%else%}
                     <form method="POST" class="add-cart">
                         {% csrf_token %}
-                        <button
-                            class="btn btn-secondary"
-                            type="submit"
-                        >
+                        <button class="btn btn-secondary" type="submit">
                             ADD TO CART
                         </button>
                     </form>
                     {%endif%}
 
                     <!--Card content-->
-                   {% if item.hasToppings%}
+                    {% if item.hasToppings%}
                     <div data-id="{{ item.id }}" class="toppings hide p-4">
                         <button type="button" class="close" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                        <h4 class="name">{{item.group}} {{item.name}}</h4>
+
+                        <h4 class="name">
+                            {{item.group}} {{item.name}}
+                        </h4>
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th></th>
+                                        <th>price for small</th>
+                                        <th>price for large</th>
+                                    </tr>
+
+                                    {% for price in item.toppingProduct.all %}
+                                    <tr>
+                                        <td>
+                                            {{price.toppingQuantity}} topping
+                                        </td>
+                                        <td>{{price.priceForSmall}}</td>
+                                        <td>{{price.priceForLarge}}</td>
+                                    </tr>
+                                    {%endfor%}
+                                </table>
                         <h3>choose toppings:</h3>
+                        <h3>toppings amount:  <input
+                                            class="topCounter"
+                                            type="text"
+                                            placeholder="0"
+                                            min="0"
+                                            value="0"
+                                        />
+                                    
+                                    </h3>
+
                         <form method="POST" class="cart-toppings">
                             {% csrf_token %}
                             <div class="row mt-4">
                                 {% for topping in item.items.all %}
-                                <div class="col-lg-4 col-md-4 mb-4 d-flex">
+                                <div
+                                    class="col-lg-4 col-md-4 mb-4 d-flex align-items-center"
+                                >
                                     <span>{{ topping.name }}</span>
-                                        <div class = "counter">
-                                            <span class="minus">–</span>
-                                            <input
-                                                class="amount"
-                                                type="text"
-                                                placeholder="0"
-                                                min = "0"
-                                                value="0"
-                                                data-idtop="{{ topping.id }}"
-                                            />
-                                            <span class="plus">+</span>
-                                        </div>
+                                    <div class="counter ml-3">
+                                        <span class="minus topMinus">–</span>
+                                        <input
+                                            class="amount "
+                                            type="text"
+                                            placeholder="0"
+                                            min="0"
+                                            max="5"
+                                            value="0"
+                                            data-idtop="{{ topping.id }}"
+                                        />
+                                        <span class="plus topPlus">+</span>
+                                    </div>
                                 </div>
                                 {%endfor%}
                             </div>
-                            <button
-                                class="btn btn-secondary"
-                                type="submit"
-                            >
+                            <button class="btn btn-secondary" type="submit">
                                 ADD TO CART
                             </button>
                         </form>
@@ -144,3 +172,16 @@
     </div>
 </section>
 {% endblock %}
+
+<!-- 
+                                {% for topping in item.items.all %}
+                                <div
+                                    class="col-lg-4 col-md-4 mb-4"
+                                >
+                                    
+                                      <div class="form-check">
+                                          <label class="form-check-label" for="{{ topping.id }}">{{ topping.name }}</label>
+                                          <input  data-idtop="{{ topping.id }}" type="checkbox"  id="{{ topping.id }}">
+                                    </div>
+                                 </div>
+                                {%endfor%} -->

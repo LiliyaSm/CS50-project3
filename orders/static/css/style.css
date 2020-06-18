@@ -41,7 +41,6 @@
     top: 5%;
     left: 5%;
     text-transform: uppercase;
-    cursor: pointer;
 }
 
 .info {
@@ -76,7 +75,6 @@
 }
 .counter {
     display: flex;
-    bottom: 0;
 }
 
 
@@ -117,5 +115,7 @@
     transform: translate(-50%, -50%);
     background-color:#d4ffd4;
     border: 3px solid rgba(0,0,0,.3);
-    border-radius: 5px;     
+    border-radius: 5px;    
+    width: 700px; 
+    z-index: 999;
 }

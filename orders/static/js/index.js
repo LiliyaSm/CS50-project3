@@ -1,23 +1,31 @@
-
 jQuery.fn.center = function () {
-    this.css("position","absolute");
-    this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) + 
-                                                $(window).scrollTop()) + "px");
-    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + 
-                                                $(window).scrollLeft()) + "px");
+    this.css("position", "absolute");
+    this.css(
+        "top",
+        Math.max(
+            0,
+            ($(window).height() - $(this).outerHeight()) / 2 +
+                $(window).scrollTop()
+        ) + "px"
+    );
+    this.css(
+        "left",
+        Math.max(
+            0,
+            ($(window).width() - $(this).outerWidth()) / 2 +
+                $(window).scrollLeft()
+        ) + "px"
+    );
     return this;
-}
-
+};
 
 $(document).ready(function () {
-
     // add badge for pizzas
-    $(".type:contains('topping')").parent().append(
-        "<span class='badge-pill'>add toppings!</span>"
-    );
+    $(".type:contains('topping')")
+        .parent()
+        .append("<span class='badge-pill'>add toppings!</span>");
 
     $(".cart-toppings").on("submit", function (e) {
-
         //  setting up AJAX to pass CSRF token
 
         function getCookie(name) {
@@ -57,17 +65,17 @@ $(document).ready(function () {
         const id = card.data("id");
 
         //get topping info
+
         const $input = card.find(".amount");
         let dict = {};
         $input.each(function () {
-            if ($(this).val()>0)
-            {
+            if ($(this).val() > 0) {
                 idtop = $(this).attr("data-idtop");
                 dict[idtop] = $(this).val();
             }
-            
         });
 
+        $(this).parent(".toppings").addClass("hide");
         $.post(
             "add_to_cart/",
             { id: id, price: price, toppings: JSON.stringify(dict) },
@@ -75,13 +83,7 @@ $(document).ready(function () {
                 console.log(response);
             }
         );
-
-
-
-
-
     });
-
 
     $(".choose-toppings").on("click", function (e) {
         const card = $(this).closest(".info");
@@ -90,7 +92,6 @@ $(document).ready(function () {
         const toppings = $(".toppings").closest(`[data-id = ${id}]`);
         toppings.removeClass("hide");
     });
-
 
     //press add to card button
 
@@ -137,7 +138,6 @@ $(document).ready(function () {
         });
     });
 
-
     //choosing price small or large on main page
 
     $("input[name=type]").on("click", function () {
@@ -149,9 +149,7 @@ $(document).ready(function () {
 
         //change data attr
         $(this).closest("div.info").attr("data-price", type);
-
     });
-    
 
     // filter on the main page
 
@@ -172,132 +170,146 @@ $(document).ready(function () {
         titles.closest(".card").parent().show();
     });
 
+    // counter
 
-
-        // counter
-
-        $(".minus").click(function () {
-            let $input = $(this).parent().find(".amount");
-            const minValue = $input.attr("min");
-
-            let count = parseInt($input.val()) - 1;
-            count = count < minValue ? minValue : count;
+    $(".topMinus").click(function () {
+        let $input = $(this).closest(".toppings").find(".topCounter");
+        let $inputTop = $(this).parent().find(".amount");
+        let count = parseInt($input.val()) - 1;
+        if ($input.val() > 0 && $inputTop.val() > 0) {
+            count = count < 0 ? 0 : count;
             $input.val(count);
-            // trigger event change
             $input.change();
             return false;
-        });
-        $(".plus").click(function () {
-            let $input = $(this).parent().find(".amount");
+        }
+        // trigger event change
+    });
 
+    $(".minus").click(function () {
+        let $input = $(this).parent().find(".amount");
+        const minValue = $input.attr("min");
+
+        let count = parseInt($input.val()) - 1;
+        count = count < minValue ? minValue : count;
+        $input.val(count);
+        // trigger event change
+        $input.change();
+        return false;
+    });
+    $(".plus").click(function () {
+        let $input = $(this).parent().find(".amount");
+        const maxValue = $input.attr("max");
+        let count = parseInt($input.val()) + 1;
+        count = count > maxValue ? maxValue : count;
+        $input.val(count);
+        $input.change();
+        return false;
+    });
+
+    $(".topPlus").click(function () {
+        let $input = $(this).closest(".toppings").find(".topCounter");
+
+        let $allInputs = $(this).closest(".toppings").find(".amount");
+
+        if ($input.val() < 4) {
             $input.val(parseInt($input.val()) + 1);
             $input.change();
+
+            $allInputs.each(function () {
+                let newMax = 4 - $input.val() + parseInt($(this).val());
+                $(this).attr("max", newMax);
+            });
             return false;
-        });
+        }
+    });
 
-
-//if changes amount it will change price and total sum in the cart
+    //if changes amount it will change price and total sum in the cart
     $("td .amount").change(function () {
         const amount = $(this).val();
-        const line_id = $(this).closest("tr").data("id")
+        const line_id = $(this).closest("tr").data("id");
         const priceField = $(this).closest("tr").find(".calc_price");
 
         function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== "") {
-                    var cookies = document.cookie.split(";");
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (
-                            cookie.substring(0, name.length + 1) ===
-                            name + "="
-                        ) {
-                            cookieValue = decodeURIComponent(
-                                cookie.substring(name.length + 1)
-                            );
-                            break;
-                        }
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                var cookies = document.cookie.split(";");
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === name + "=") {
+                        cookieValue = decodeURIComponent(
+                            cookie.substring(name.length + 1)
+                        );
+                        break;
                     }
                 }
-                return cookieValue;
             }
-            var csrftoken = getCookie("csrftoken");
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
-            }
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    if (
-                        !csrfSafeMethod(settings.type) &&
-                        !this.crossDomain
-                    ) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                },
-            });
+            return cookieValue;
+        }
+        var csrftoken = getCookie("csrftoken");
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            },
+        });
 
-        $.post("update_cart/", { id: line_id, amount: amount }, function (response) {
-            
+        $.post("update_cart/", { id: line_id, amount: amount }, function (
+            response
+        ) {
             priceField.text(parseFloat(response.new_price).toFixed(2));
             $(".total-price").text(parseFloat(response.new_total).toFixed(2));
 
             console.log(response.new_price, response.new_total);
         });
-
     });
 
     $(".toppings .close").click(function () {
-    $(this).parent(".toppings").addClass("hide")
-    })
+        $(this).parent(".toppings").addClass("hide");
+    });
 
-
-// delete item from cart
+    // delete item from cart
     $(".cart.close").click(function () {
+        const line_id = $(this).closest("tr").data("id");
+        $(this).closest("tr").remove();
 
-        const line_id = $(this).closest("tr").data("id");        
-        $(this).closest("tr").remove()
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                var cookies = document.cookie.split(";");
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === name + "=") {
+                        cookieValue = decodeURIComponent(
+                            cookie.substring(name.length + 1)
+                        );
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie("csrftoken");
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            },
+        });
 
-         function getCookie(name) {
-             var cookieValue = null;
-             if (document.cookie && document.cookie !== "") {
-                 var cookies = document.cookie.split(";");
-                 for (var i = 0; i < cookies.length; i++) {
-                     var cookie = jQuery.trim(cookies[i]);
-                     // Does this cookie string begin with the name we want?
-                     if (cookie.substring(0, name.length + 1) === name + "=") {
-                         cookieValue = decodeURIComponent(
-                             cookie.substring(name.length + 1)
-                         );
-                         break;
-                     }
-                 }
-             }
-             return cookieValue;
-         }
-         var csrftoken = getCookie("csrftoken");
-         function csrfSafeMethod(method) {
-             // these HTTP methods do not require CSRF protection
-             return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
-         }
-         $.ajaxSetup({
-             beforeSend: function (xhr, settings) {
-                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                 }
-             },
-         });
-
-
-         $.post("delete_item/", { id: line_id}, function (response) {
-             $(".total-price").text(parseFloat(response.new_total).toFixed(2));
-
-         });
-
-
-
-    })
-
-
+        $.post("delete_item/", { id: line_id }, function (response) {
+            $(".total-price").text(parseFloat(response.new_total).toFixed(2));
+        });
+    });
 });
