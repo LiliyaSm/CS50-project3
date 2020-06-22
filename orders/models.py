@@ -23,10 +23,13 @@ class Item(models.Model):
         dishType, on_delete=models.CASCADE, related_name="group", null=True)
     #connection beetwen dish and topping asymmetr, we need add toppings to dish, not vice versa
     items = models.ManyToManyField("self", symmetrical=False, blank=True)
+    #quantity of toppings
     hasToppings = models.BooleanField(default=False)
     priceForSmall = models.DecimalField(max_digits=6, decimal_places=2)
     priceForLarge = models.DecimalField(
         max_digits=6, decimal_places=2, default=Decimal(0))
+        
+
 
     def __str__ (self):
         return f"{self.name} {self.group}"
@@ -37,7 +40,8 @@ class Cart(models.Model):
         User, on_delete=models.CASCADE, related_name="user", null=False)
     order_date = models.DateField(null=True)  # auto_now_add=True
     total = models.DecimalField(default=Decimal(0), max_digits=10, decimal_places=2)
-    products = models.ManyToManyField(Item, through='ItemOrder')
+    # products = models.ManyToManyField(Item, through='ItemOrder')
+    confirmed = models.BooleanField(default=False)
 
 
 
@@ -72,6 +76,17 @@ class ItemOrder(models.Model):
     def __str__(self):
         return f"{self.item}"
 
+
+class ToppingsPrice(models.Model):
+    item = models.ForeignKey(
+        Item, on_delete=models.CASCADE, related_name="toppingProduct")
+
+    priceForSmall = models.DecimalField(max_digits=6, decimal_places=2)
+    priceForLarge = models.DecimalField(
+        max_digits=6, decimal_places=2, default=Decimal(0))
+
+    def __str__(self):
+        return f"{self.item}"
 
 # @receiver(post_save, sender=ItemOrder)
 # def update_cart(sender, instance, **kwargs): 

@@ -3,30 +3,24 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.shortcuts import redirect, render, get_object_or_404
-from .models import Item, Cart, ItemOrder
+from .models import Item, Cart, ItemOrder, ToppingsPrice
 from django.http import HttpResponse
 import json
 import decimal
+from django.db.models import Q
 # from django.http import JsonResponse
 
-# Create your views here.
 def index(request):
 
-    items = Item.objects.exclude(group__dishType="Toppings")
+    items = Item.objects.exclude(
+        Q(group__dishType="Toppings") | Q(group__dishType="Extras"))
     for item in items:
         for linkedItem in item.items.all():
             print(linkedItem)
 
-    
-    toppings = ["Pepperoni",
-                "Sausage",
-                "Mushrooms",
-                "Onions"]
-    # p.get_shirt_size_display()
     context = {
         "user": request.user,
         "items": items,
-        "toppings": toppings
     }
 
     return render(request, "menu/index.html", context)
@@ -55,31 +49,51 @@ def add_to_cart(request):
         else:
             size = "Small"
 
-
-    # price for small or large
-    price = getattr(item, priceType)
-    print(price, item_id, user)
+    # print(price, item_id, user)
     
 
     cart, created = Cart.objects.get_or_create(user=request.user)
 
-
-    if toppings:
+    
+    if toppings and len(toppings) > 0:
         toppings = json.loads(toppings)
+        count = 0
+        for value in toppings.values():
+            count += int(value)
+        try:
+            #try to get price depending on the quantity.
+            topping_price = get_object_or_404(ToppingsPrice,
+            item=item, toppingQuantity=count)
+            price = getattr(topping_price, priceType)
+            # otherwise get dish price
+        except Exception as e:
+            print(e)
+            price = getattr(item, priceType)
+
+        print(toppings)
+
+        
         order = ItemOrder(
-            item=item, cart=cart, price=price, size=size, quantity = 1)
+            item=item, cart=cart, size=size, quantity = 1)
+        order.save()
+        for key, value in toppings.items():
+            item_top = get_object_or_404(Item, pk=key)
+            price_top = getattr(item_top, priceType)*int(value)
+            price += price_top
+            # place topping in the order
+            topping = ItemOrder(
+                item=item_top, cart=cart, quantity=value, price=getattr(item_top, priceType))
+            topping.save()
+            # link main dish and topping
+            order.toppings.add(topping)
+
+        order.price = price
         order.calc_price += price
         order.save()
 
-        print(toppings)
-        for key, value in toppings.items():
-            item_top = get_object_or_404(Item, pk=key)
-            topping = ItemOrder(
-                item=item_top, cart=cart, quantity=value)
-            topping.save()
-            order.toppings.add(topping)
-
     else:
+        # price for small or large
+        price = getattr(item, priceType)
         order, created = ItemOrder.objects.get_or_create(
             item=item, cart=cart, price=price, size=size)
         order.quantity += 1
@@ -157,7 +171,9 @@ def cart(request):
     if not Cart.objects.filter(user=user).exists():
         return render(request, "menu/cart.html", {"total": 0.00})
     items_user = ItemOrder.objects.filter(
-        cart__user=user).exclude(item__group__dishType="Toppings")
+        cart__user=user).exclude(Q(item__group__dishType="Toppings") | Q(item__group__dishType="Extras"))
+         
+    
     total = Cart.objects.get(user=user).total
     items = items_user.select_related('item')
 

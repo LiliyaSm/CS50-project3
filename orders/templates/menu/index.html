@@ -106,38 +106,57 @@
                         <h4 class="name">
                             {{item.group}} {{item.name}}
                         </h4>
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th></th>
-                                        <th>price for small</th>
-                                        <th>price for large</th>
-                                    </tr>
+                        <table class="table table-bordered">
+                            <tr>
+                                <th></th>
+                                <th>price for small</th>
+                                <th>price for large</th>
+                            </tr>
+                            {% for price in item.toppingProduct.all %}
 
-                                    {% for price in item.toppingProduct.all %}
-                                    <tr>
-                                        <td>
-                                            {{price.toppingQuantity}} topping
-                                        </td>
-                                        <td>{{price.priceForSmall}}</td>
-                                        <td>{{price.priceForLarge}}</td>
-                                    </tr>
-                                    {%endfor%}
-                                </table>
+                            <!-- check if item has price for particular quantity -->
+                            {% if price.toppingQuantity %}
+                            <tr>
+                                <td>
+                                    {{price.toppingQuantity}} topping
+                                </td>
+                                <td>{{price.priceForSmall}}</td>
+                                <td>{{price.priceForLarge}}</td>
+                            </tr>
+                            {%endif%} {%endfor%} {% for price in item.items.all%}
+                            <!-- check if item has its own price -->
+
+                            {% if price.priceForSmall %}
+
+                            <tr>
+                                <td>
+                                    1 extra {{item.name}} portion
+                                </td>
+                                <td>{{price.priceForSmall}}</td>
+                                <td>{{price.priceForLarge}}</td>
+                            </tr>
+                            {%endif%} {%endfor%}
+                        </table>
                         <h3>choose toppings:</h3>
-                        <h3>toppings amount:  <input
-                                            class="topCounter"
-                                            type="text"
-                                            placeholder="0"
-                                            min="0"
-                                            value="0"
-                                        />
-                                    
-                                    </h3>
+                        {% if topping.group.dishType == "Toppings" %}
+
+                        <h3>
+                            toppings amount:
+                            <input
+                                class="topCounter"
+                                type="text"
+                                placeholder="0"
+                                min="0"
+                                value="0"
+                            />
+                        </h3>
+                        {%endif%}
 
                         <form method="POST" class="cart-toppings">
                             {% csrf_token %}
                             <div class="row mt-4">
-                                {% for topping in item.items.all %}
+                                {% for topping in item.items.all %} 
+                                {% if topping.group.dishType == "Toppings" %}
                                 <div
                                     class="col-lg-4 col-md-4 mb-4 d-flex align-items-center"
                                 >
@@ -145,18 +164,34 @@
                                     <div class="counter ml-3">
                                         <span class="minus topMinus">–</span>
                                         <input
-                                            class="amount "
+                                            class="amount"
                                             type="text"
                                             placeholder="0"
                                             min="0"
-                                            max="5"
+                                            max="4"
                                             value="0"
                                             data-idtop="{{ topping.id }}"
                                         />
                                         <span class="plus topPlus">+</span>
                                     </div>
                                 </div>
-                                {%endfor%}
+                                {%else%}
+                                <div
+                                    class="col-lg-6 col-md-6 mb-4 align-items-center"
+                                >
+                                    <h3>
+                                        <span>{{ topping.name }}</span>
+                                        <input
+                                            class="checkbox ml-3"
+                                            type="checkbox"
+                                            placeholder="0"
+                                            value="0"
+                                            data-idtop="{{ topping.id }}"
+                                        />
+                                    </h3>
+                                </div>
+
+                                {%endif%} {%endfor%}
                             </div>
                             <button class="btn btn-secondary" type="submit">
                                 ADD TO CART

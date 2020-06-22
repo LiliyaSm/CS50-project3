@@ -119,3 +119,38 @@
     width: 700px; 
     z-index: 999;
 }
+
+
+.topCounter{
+    width: 40px;
+    border: none;
+    background-color: transparent;
+
+}
+
+.topCounter:focus{
+    outline: none;
+}
+
+input[type="checkbox"] {
+  transform:scale(2, 2);
+}
+
+
+/* override default styles for filter_horizontal */
+.selector {
+    width: 100%;
+}
+
+.selector .selector-available, .selector .selector-chosen {
+    max-width: 45%;
+}
+
+.selector select {
+        width: 100%;
+
+} 
+.selector .selector-available input {
+    width: 80%; 
+    margin-left: 8px;
+}
