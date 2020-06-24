@@ -3,35 +3,26 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.shortcuts import redirect, render, get_object_or_404
-from .models import Item, Cart, ItemOrder, ToppingsPrice
+from django.db.models import Q
 from django.http import HttpResponse
+from .models import Item, Cart, ItemOrder, ToppingsPrice
 import json
 import decimal
-from django.db.models import Q
+import datetime
+import copy
 # from django.http import JsonResponse
 
 def index(request):
 
     items = Item.objects.exclude(
         Q(group__dishType="Toppings") | Q(group__dishType="Extras"))
-    for item in items:
-        for linkedItem in item.items.all():
-            print(linkedItem)
-
     context = {
         "user": request.user,
         "items": items,
     }
-
     return render(request, "menu/index.html", context)
 
-
-def getEvents (request):
-    print(request.GET.get("type", ""))
-    return False
-
-
-
+@login_required
 def add_to_cart(request):
     """adding items on the main page"""
     item_id = request.POST.get("id", "")
@@ -39,7 +30,6 @@ def add_to_cart(request):
     toppings = request.POST.get("toppings", "")    
 
     user = request.user
-
     item = get_object_or_404(Item, pk=item_id)
 
     size = "Large"
@@ -48,12 +38,8 @@ def add_to_cart(request):
             size = "One size"
         else:
             size = "Small"
-
-    # print(price, item_id, user)
     
-
-    cart, created = Cart.objects.get_or_create(user=request.user)
-
+    cart, created = Cart.objects.get_or_create(user=request.user, confirmed = False)
     
     if toppings and len(toppings) > 0:
         toppings = json.loads(toppings)
@@ -70,9 +56,6 @@ def add_to_cart(request):
             print(e)
             price = getattr(item, priceType)
 
-        print(toppings)
-
-        
         order = ItemOrder(
             item=item, cart=cart, size=size, quantity = 1)
         order.save()
@@ -100,7 +83,6 @@ def add_to_cart(request):
         order.calc_price += price
         order.save()
 
-
     cart.total += price
     cart.save()
     return HttpResponse(
@@ -108,16 +90,21 @@ def add_to_cart(request):
     )
 
 
-
-
+@login_required
 def delete_item(request):
     '''delete items from cart on the cart page'''
     user = request.user
     id = request.POST.get("id", "")
-    item = ItemOrder.objects.get(cart__user=user, id=id)
+    item = ItemOrder.objects.get(cart__user=user,  cart__confirmed=False, id=id)
     item.delete()
-    cart = Cart.objects.get(user=user)
-    response_data = {"new_total": cart.total}
+
+    if ItemOrder.objects.filter(cart__user=user,  cart__confirmed=False).count() == 0:
+        last_one=True
+    else:
+        last_one=False
+
+    cart = Cart.objects.get(user=user, confirmed=False)
+    response_data = {"new_total": cart.total, "last_one": last_one}
     return HttpResponse(
         json.dumps(response_data, cls=DecimalEncoder),
         content_type="application/json"
@@ -132,13 +119,16 @@ class DecimalEncoder(json.JSONEncoder):
             return float(o)
         return super(DecimalEncoder, self).default(o)
 
+
+@login_required
+
 def update_cart(request):
     """changing items amount on the cart page"""
     user = request.user
     line_id = request.POST.get("id", "")
     new_amount = int(request.POST.get("amount", ""))
-    changed_item = ItemOrder.objects.get(cart__user=user, id=line_id)
-    cart = Cart.objects.get(user=user)
+    changed_item = ItemOrder.objects.get(cart__user=user,  cart__confirmed=False, id=line_id)
+    cart = Cart.objects.get(user=user, confirmed=False)
     new_price = new_amount * changed_item.price
 
     if changed_item.quantity > new_amount:
@@ -157,35 +147,114 @@ def update_cart(request):
     
 
     cart.save()
-    new_total = Cart.objects.get(user=user).total
+    new_total = Cart.objects.get(user=user, confirmed=False).total
     response_data = {"new_price": new_price, "new_total": new_total}
     return HttpResponse(
         json.dumps(response_data, cls=DecimalEncoder),
         content_type="application/json"
     )
 
+
+@login_required(login_url='login')
+
 def cart(request):
     """shopping cart page with order"""
 
     user = request.user
-    if not Cart.objects.filter(user=user).exists():
+    if not Cart.objects.filter(user=user, confirmed=False).exists():
         return render(request, "menu/cart.html", {"total": 0.00})
     items_user = ItemOrder.objects.filter(
-        cart__user=user).exclude(Q(item__group__dishType="Toppings") | Q(item__group__dishType="Extras"))
+        cart__user=user, cart__confirmed = False).exclude(Q(item__group__dishType="Toppings") | Q(item__group__dishType="Extras"))
          
-    
-    total = Cart.objects.get(user=user).total
+    total = Cart.objects.get(user=user, confirmed=False).total
     items = items_user.select_related('item')
 
    
     context = {
         "itemorders": items,
-        "total": total
+        "total": total,
+        "unconfirmed": True
     }
     return render(request, "menu/cart.html", context)
 
 
+@login_required
 
+def confirm_cart(request):
+    """function invokes after pressing "confirm" button"""
+
+    user = request.user
+    cart = Cart.objects.get(user=user, confirmed=False)
+    if not cart.total:
+        return render(request, "menu/cart.html")
+    cart.confirmed = True
+    cart.order_date = datetime.datetime.now()
+    cart.save()
+    return HttpResponse(
+        content_type="application/json"
+    )
+
+
+@login_required
+
+def order_history(request):
+    carts = Cart.objects.filter(user=request.user, confirmed=True).all()
+    
+    context = {
+        "carts": carts
+    }
+    return render(request, "menu/orders_history.html", context)
+
+
+@login_required(login_url='login')
+def order_detail (request, id):
+    """page with old confirmed order"""
+    user = request.user
+    items_user = ItemOrder.objects.filter(
+        cart__user=user, cart__id = id).exclude(Q(item__group__dishType="Toppings") | Q(item__group__dishType="Extras"))
+    cart_id = id
+
+    total = Cart.objects.get(user=user, id=id).total
+    items = items_user.select_related('item')
+    # order = Cart.objects.get_object_or_404(user=request.user, cart__id=id)
+    return render(request, "menu/cart.html", {'itemorders': items, "total": total, "unconfirmed": False, "cart_id": cart_id})
+
+
+@login_required(login_url='login')
+def order_repeat(request, id):
+
+    #delete cart if it already exsists
+
+    try:
+        cart = Cart.objects.get(user=request.user, confirmed=False)
+        cart.delete()
+    except Cart.DoesNotExist:
+        pass
+
+    new_cart = copy.deepcopy(Cart.objects.get(user=request.user, id=id))
+    new_cart.pk = None
+    new_cart.order_date = datetime.datetime.now()
+    new_cart.confirmed = False
+    new_cart.save()
+
+    # items = ItemOrder.objects.filter(cart__user=request.user, cart__pk=id)
+    # new_items = copy.deepcopy(items)
+    # new_items.update(cart=new_cart)
+
+    items = copy.copy(ItemOrder.objects.filter(
+        cart__user=request.user, cart__pk=id))
+
+
+    #items.update(id=None)
+
+    for i in items:
+        i.pk = None
+        i.cart_id = new_cart.pk
+    ItemOrder.objects.bulk_create(items)
+
+    return redirect("cart")
+
+        
 
 
 # share = Share.objects.get(shared_user_id=log_id)

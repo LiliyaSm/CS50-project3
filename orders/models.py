@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from decimal import Decimal
+import datetime
 
 
 # Create your models here.
@@ -20,7 +21,7 @@ class dishType(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=64)
     group = models.ForeignKey(
-        dishType, on_delete=models.CASCADE, related_name="group", null=True)
+        dishType, on_delete=models.CASCADE, related_name="group", null=False)
     #connection beetwen dish and topping asymmetr, we need add toppings to dish, not vice versa
     items = models.ManyToManyField("self", symmetrical=False, blank=True)
     #quantity of toppings
@@ -38,7 +39,8 @@ class Item(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user", null=False)
-    order_date = models.DateField(null=True)  # auto_now_add=True
+    order_date = models.DateTimeField(
+        default=datetime.datetime.now, blank=True)  # auto_now_add=True
     total = models.DecimalField(default=Decimal(0), max_digits=10, decimal_places=2)
     # products = models.ManyToManyField(Item, through='ItemOrder')
     confirmed = models.BooleanField(default=False)
@@ -51,7 +53,7 @@ class Cart(models.Model):
 
     def __str__(self):
         # return "User: {} has items in their cart. Their total is ${}".format(self.user, self.total)
-        return f"{self.user}"
+        return f"{self.user} order № {self.id}, date: {self.order_date.strftime('%m/%d/%Y %I:%M:%S %p')}"
 
     
 
@@ -80,7 +82,7 @@ class ItemOrder(models.Model):
 class ToppingsPrice(models.Model):
     item = models.ForeignKey(
         Item, on_delete=models.CASCADE, related_name="toppingProduct")
-
+    toppingQuantity = models.PositiveIntegerField(default=0)
     priceForSmall = models.DecimalField(max_digits=6, decimal_places=2)
     priceForLarge = models.DecimalField(
         max_digits=6, decimal_places=2, default=Decimal(0))

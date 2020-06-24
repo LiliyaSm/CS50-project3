@@ -7,7 +7,6 @@ class ItemInline(admin.TabularInline):
     model = ItemOrder
     # no need extra forms for adding new item orders
     extra = 0
-    # readonly_fields = ['subtotal']
     # exclude = ['price']
     filter_horizontal = ('toppings',)
     
@@ -33,11 +32,12 @@ class ItemInline(admin.TabularInline):
 
 class AdiminCart(admin.ModelAdmin):
     inlines = (ItemInline,)
-    fieldsets = (
-        (None, {
-            'fields': ('user', 'total')
-        }),
-    )
+    readonly_fields = ['user', 'order_date']
+    # fieldsets = (
+    #     (None, {
+    #         'fields': ('user', 'total')
+    #     }),
+    # )
 
     # filter by name
     search_fields = (

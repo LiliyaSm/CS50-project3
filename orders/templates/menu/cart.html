@@ -2,14 +2,26 @@
 {% block body %}
 
 <div class="container">
-    <div class="title">
-        <a>Purchase history</a>
+    <div>
+       
     </div> 
        <div class="title">
         Shopping cart
-    </div>
+         <a href="{% url 'order_history' %}">Purchase history</a>
+        </div>
 
     {% if itemorders %}
+
+    {% if unconfirmed %}
+    <form method="POST" class="confirm-cart">
+    {% else %}
+   
+    <form   action="{% url 'order_repeat' cart_id %}"  method="POST">
+
+    {% endif %}
+
+    {% csrf_token %}
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -25,11 +37,14 @@
             {% for ordereditem in itemorders %}
             <tr data-id = " {{ordereditem.id}} ">
                 <td scope="row">
+                {% if unconfirmed %}
                     <div class="buttons">
                         <button type="button" class="cart close" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                {% endif %}
+                
                 </td>
                 <td>
                     <span>{{ ordereditem.item.group }}</span>
@@ -41,24 +56,23 @@
                         <span> x{{ topping.quantity }}</span>
                     <br/>
 
-
                     {%endfor%}
-
 
                 </td>
                 <td>{{ ordereditem.price }}</td>
                 <td>
                     <form method="POST" class="counter">
                         {% csrf_token %}
-                        <span class="minus">–</span>
-                        <input
-                            class="amount"
-                            type="text"
-                            value="{{ ordereditem.quantity }}"
-                            min = "1"
-
-                        />
-                        <span class="plus">+</span>
+                        <div class="counter">
+                            <span class="minus">–</span>
+                            <input
+                                class="amount"
+                                type="text"
+                                value="{{ ordereditem.quantity }}"
+                                min = "1"
+                            />
+                            <span class="plus">+</span>
+                        </div>
                     </form>
                 </td>
                 <td  class="calc_price">{{ ordereditem.calc_price }}</td>
@@ -67,10 +81,21 @@
             
         </tbody>
     </table>
+    {% if unconfirmed %}
+
     <div class="confirm">
          <h4 > Total <span class="total-price">  {{ total }} </span> </h4>
-        <button class="add-cart btn btn-secondary my-3" type="submit">CONFIRM ORDER</button>
+        <button class="add-cart btn btn-secondary my-3" type="submit">confirm order</button>
     </div> 
+    {% else %}
+
+    <div class="repeat">
+        <button class="repeat btn btn-secondary my-3" data-id = {{ordereditem}} type="submit">repeat order</button>
+    </div> 
+    {% endif %}
+
+    </form>
+
     {% else %}
     <h4 class="text-center">Your cart is empty</h4>
     {% endif %}

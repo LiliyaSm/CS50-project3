@@ -114,8 +114,8 @@
                             </tr>
                             {% for price in item.toppingProduct.all %}
 
-                            <!-- check if item has price for particular quantity -->
-                            {% if price.toppingQuantity %}
+                            {#  check if item has price for particular quantity  #}
+                            {% if price.priceForSmall %}
                             <tr>
                                 <td>
                                     {{price.toppingQuantity}} topping
@@ -123,8 +123,11 @@
                                 <td>{{price.priceForSmall}}</td>
                                 <td>{{price.priceForLarge}}</td>
                             </tr>
-                            {%endif%} {%endfor%} {% for price in item.items.all%}
-                            <!-- check if item has its own price -->
+                            {%endif%} {%endfor%} 
+                            
+                            {% for price in item.items.all%}
+
+                            {# check if item has its own price #}
 
                             {% if price.priceForSmall %}
 
@@ -135,10 +138,15 @@
                                 <td>{{price.priceForSmall}}</td>
                                 <td>{{price.priceForLarge}}</td>
                             </tr>
-                            {%endif%} {%endfor%}
+                            {%endif%} 
+                            {%endfor%}
                         </table>
+
                         <h3>choose toppings:</h3>
-                        {% if topping.group.dishType == "Toppings" %}
+
+                        {# if item has toppings display toppings' counter 	#}
+
+                        {% if "Pizza" in item.group.dishType %}
 
                         <h3>
                             toppings amount:

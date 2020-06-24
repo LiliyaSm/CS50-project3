@@ -81,6 +81,8 @@
 
 
 .title {
+    display: flex;
+    justify-content: space-between;
   border-bottom: 1px solid #E1E8EE;
   padding: 20px 30px;
   color: #5E6977;
@@ -95,8 +97,15 @@
   font-size: 20px;
   color: #43484D;
   font-weight: bold;
-  
 }
+.add-cart {
+  text-transform: uppercase;  
+}
+.repeat {
+  text-align: right;
+  text-transform: uppercase;  
+}
+
 /* 
 .confirm {
     display: flex;
@@ -133,7 +142,8 @@
 }
 
 input[type="checkbox"] {
-  transform:scale(2, 2);
+  transform:scale(1.5, 1.5);
+  margin-right: 5px;
 }
 
 
