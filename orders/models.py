@@ -67,7 +67,8 @@ class ItemOrder(models.Model):
     cart = models.ForeignKey(
         Cart, on_delete=models.CASCADE, related_name="cart")
 
-    toppings = models.ManyToManyField("self", symmetrical=False, blank=True)
+    toppings = models.ManyToManyField(
+        "self", symmetrical=False, blank=True)
     quantity = models.PositiveIntegerField(default=0)  # default = 1
     price = models.DecimalField(default=Decimal(0), max_digits=10, decimal_places=2)
     calc_price = models.DecimalField(
@@ -106,40 +107,3 @@ def delete_item(sender, instance, **kwargs):
     instance.cart.total -= instance.calc_price
     instance.cart.save()
 
-
-
-
-
-
-# class Order(models.Model):
-#     dishType = models.CharField(max_length=64)
-# class CartItem(models.Model):
-#  cart_id = models.CharField(max_length=50)
-#  date_added = models.DateTimeField(auto_now_add=True)
-#  quantity = models.IntegerField(default=1)
-#  product = models.ForeignKey('catalog.Product', unique=False)
-
-#  class Meta:
-#  db_table = 'cart_items'
-#  ordering = ['date_added']
-
-#  def total(self):
-#  return self.quantity * self.product.price
-
-#  def name(self):
-#  return self.product.name
-
-#  def price(self):
-#  return self.product.price
-
-
-# www.it-ebooks.info
-# CHAPTER 4 ■ THE SHOPPING CART
-# 83
-
-
-# def get_absolute_url(self):
-#  return self.product.get_absolute_url()
-#  def augment_quantity(self, quantity):
-#  self.quantity = self.quantity + int(quantity)
-#  self.save()

@@ -10,8 +10,11 @@ import json
 import decimal
 import datetime
 import copy
+from django.contrib import messages
 # from django.http import JsonResponse
 
+
+@login_required(login_url='login')
 def index(request):
 
     items = Item.objects.exclude(
@@ -22,7 +25,8 @@ def index(request):
     }
     return render(request, "menu/index.html", context)
 
-@login_required
+
+@login_required(login_url='login')
 def add_to_cart(request):
     """adding items on the main page"""
     item_id = request.POST.get("id", "")
@@ -90,12 +94,13 @@ def add_to_cart(request):
     )
 
 
-@login_required
+@login_required(login_url='login')
 def delete_item(request):
     '''delete items from cart on the cart page'''
     user = request.user
     id = request.POST.get("id", "")
     item = ItemOrder.objects.get(cart__user=user,  cart__confirmed=False, id=id)
+    # item.toppings.all().delete()
     item.delete()
 
     if ItemOrder.objects.filter(cart__user=user,  cart__confirmed=False).count() == 0:
@@ -120,7 +125,7 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-@login_required
+@login_required(login_url='login')
 
 def update_cart(request):
     """changing items amount on the cart page"""
@@ -178,8 +183,7 @@ def cart(request):
     return render(request, "menu/cart.html", context)
 
 
-@login_required
-
+@login_required(login_url='login')
 def confirm_cart(request):
     """function invokes after pressing "confirm" button"""
 
@@ -190,16 +194,14 @@ def confirm_cart(request):
     cart.confirmed = True
     cart.order_date = datetime.datetime.now()
     cart.save()
-    return HttpResponse(
-        content_type="application/json"
-    )
+    messages.add_message(request, messages.INFO, 'Your order is confirmed!')
+
+    return redirect("cart")
 
 
-@login_required
-
+@login_required(login_url='login')
 def order_history(request):
-    carts = Cart.objects.filter(user=request.user, confirmed=True).all()
-    
+    carts = Cart.objects.filter(user=request.user, confirmed=True).all()    
     context = {
         "carts": carts
     }
@@ -216,7 +218,6 @@ def order_detail (request, id):
 
     total = Cart.objects.get(user=user, id=id).total
     items = items_user.select_related('item')
-    # order = Cart.objects.get_object_or_404(user=request.user, cart__id=id)
     return render(request, "menu/cart.html", {'itemorders': items, "total": total, "unconfirmed": False, "cart_id": cart_id})
 
 
@@ -237,37 +238,41 @@ def order_repeat(request, id):
     new_cart.confirmed = False
     new_cart.save()
 
-    # items = ItemOrder.objects.filter(cart__user=request.user, cart__pk=id)
-    # new_items = copy.deepcopy(items)
-    # new_items.update(cart=new_cart)
-
     items = copy.copy(ItemOrder.objects.filter(
         cart__user=request.user, cart__pk=id))
 
+    # for i in items:
+    #     i.pk = None
+    #     i.cart_id = new_cart.pk
+    # new_items=ItemOrder.objects.bulk_create(items)
 
-    #items.update(id=None)
-
-    for i in items:
-        i.pk = None
-        i.cart_id = new_cart.pk
-    ItemOrder.objects.bulk_create(items)
-
-    return redirect("cart")
-
-        
+    ThroughModel = ItemOrder.toppings.through
 
 
-# share = Share.objects.get(shared_user_id=log_id)
+    old_items = copy.copy(ItemOrder.objects.filter(
+        cart__user=request.user, cart__pk=id))
+    # keep track of already added items
+    processed_items = []
+
+    for i in old_items:
+        if i.pk not in processed_items:
+            processed_items.append(i.pk)
+            toppings = copy.copy(i.toppings.all())
+            i.pk = None
+            i.cart_id = new_cart.pk
+            i.save()
+            if toppings:
+                for topping in toppings:
+                    processed_items.append(topping.pk)
+                    topping.pk = None
+                    topping.cart_id = new_cart.pk
+                    topping.save()
+                    ThroughModel.objects.create(
+                        from_itemorder_id=i.pk, to_itemorder_id=topping.pk
+                    )
+
+    messages.add_message(request, messages.INFO,
+                         'Your previous order was copied to your cart!')
 
 
-    #
-    # book = Book.objects.get(pk=book_id)
-    # try:
-    #     preexisting_order = BookOrder.objects.get(book=book, cart=self)
-    #     if preexisting_order.quantity > 1:
-    #         preexisting_order.quantity -= 1
-    #         preexisting_order.save()
-    #     else:
-    #         preexisting_order.delete()
-    # except BookOrder.DoesNotExist:
-    #     pass
+    return redirect("cart")       

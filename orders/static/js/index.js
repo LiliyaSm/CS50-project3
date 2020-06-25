@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    
+
     //  setting up AJAX to pass CSRF token
     function getCookie(name) {
         var cookieValue = null;
@@ -111,8 +111,7 @@ $(document).ready(function () {
         $(this).closest("div.info").attr("data-price", type);
     });
 
-    // filter on the main page
-
+    // nav filter on the main page
     $(".groups .nav-link").on("click", function () {
         // hightlight chosen category on nav bar
         $(".groups").find(".active").removeClass("active");
@@ -217,16 +216,5 @@ $(document).ready(function () {
                     .append("<h4 class='text-center'>Your cart is empty</h4>");
             }
         });
-    });
-
-    //confirm order in the current cart
-    $(".confirm-cart").on("submit", function (e) {
-        e.preventDefault();
-        $.post(
-            "confirm_cart/",
-            function (response) {
-                console.log(response);
-            });
-        location.reload();
     });
 });
