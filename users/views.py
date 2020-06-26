@@ -6,9 +6,6 @@ from django.urls import reverse
 from users.forms import UserRegistrationForm
 
 
-# Create your views here.
-
-
 def registration(request):
     if request.user.is_authenticated:
         return redirect('index')
@@ -28,7 +25,6 @@ def registration(request):
             return redirect('index')
 
         else:
-
             return render(request=request,
                           template_name="users/registration.html",
                           context={"form": form})

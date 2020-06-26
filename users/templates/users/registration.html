@@ -12,8 +12,7 @@ Registration
 {% endif %}
 <div class="container ">
     <br>
-    <form method="post">
-    
+    <form method="post">    
         {% csrf_token %}
         <h2>Registration form</h2>
         {% for field in form %}
@@ -30,12 +29,9 @@ Registration
             {% for error in field.errors %}
                 <p style="color: red">{{ error }}</p>
             {% endfor %}
-            {% endif %}
-            
+            {% endif %}            
         </p>
             {% endfor %}
-
-
         <button  class="btn btn-primary" type="submit">Sign Up</button>
     </form>
 </div>

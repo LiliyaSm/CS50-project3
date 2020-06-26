@@ -1,4 +1,4 @@
-{% extends "menu/base.html" %} {% block title %} Cart {% endblock %} 
+{% extends "orders/base.html" %} {% block title %} Cart {% endblock %} 
 {% block body %}
 
 <div class="container">
@@ -21,10 +21,8 @@
 
     {% if unconfirmed %}
     <form  action="{% url 'confirm_cart' %}"  method="POST" class="confirm-cart"> 
-    {% else %}
-   
+    {% else %}   
     <form   action="{% url 'order_repeat' cart_id %}"  method="POST">
-
     {% endif %}
 
     {% csrf_token %}
@@ -91,7 +89,10 @@
     {% if unconfirmed %}
 
     <div class="confirm">
-         <h4 > Total <span class="total-price">  {{ total }} </span> </h4>
+        <div class="title">
+            <a href="{% url 'index' %}">Go back to menu</a>
+            <h4 > Total <span class="total-price">  {{ total }} </span> </h4>
+        </div>
         <button class="add-cart btn btn-secondary my-3" type="submit">confirm order</button>
     </div> 
     {% else %}

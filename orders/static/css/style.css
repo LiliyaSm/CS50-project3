@@ -23,12 +23,6 @@
     position: relative;
 }
 
-@media (max-width: 1000px) {
-    .card-img-top {
-        height: 45vw;
-    }
-}
-
 .badge-pill {
     padding-right: 0.6em;
     padding-left: 0.6em;
@@ -43,14 +37,6 @@
     text-transform: uppercase;
 }
 
-.info {
-    padding: 0.25rem;
-    /* flex: 1 1 auto;
-    min-height: 1px;
-    align-items: center; */
-}
-
-
 .amount {
     width: 45px;
     border-radius: 2px;
@@ -60,10 +46,9 @@
     pointer-events: none;
 }
 
-
 .minus,
 .plus {
-    cursor:pointer;
+    cursor: pointer;
     background: #f2f2f2;
     border-radius: 4px;
     padding: 8px;
@@ -71,96 +56,89 @@
     display: inline-block;
     vertical-align: middle;
     text-align: center;
-    
 }
 .counter {
     display: flex;
 }
 
-
-
-
 .title {
     display: flex;
     justify-content: space-between;
-  border-bottom: 1px solid #E1E8EE;
-  padding: 20px 30px;
-  color: #5E6977;
-  font-size: 18px;
-  font-weight: bold;
+    border-bottom: 1px solid #e1e8ee;
+    padding: 20px 30px;
+    color: #5e6977;
+    font-size: 18px;
+    font-weight: bold;
 }
 
-
 .confirm {
-  padding-top: 27px;
-  text-align: right;
-  font-size: 20px;
-  color: #43484D;
-  font-weight: bold;
+    padding-top: 27px;
+    text-align: right;
+    font-size: 20px;
+    color: #43484d;
+    font-weight: bold;
 }
 .add-cart {
-  text-transform: uppercase;  
+    text-transform: uppercase;
 }
 .repeat {
-  text-align: right;
-  text-transform: uppercase;  
+    text-align: right;
+    text-transform: uppercase;
 }
 
-/* 
-.confirm {
-    display: flex;
-    justify-content: center
-} */
+.table td {
+    vertical-align: middle;
+}
 
-
-.table td{
-    vertical-align: middle ;}
-
-
+/* toppings block centering */
 .toppings {
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background-color:#d4ffd4;
-    border: 3px solid rgba(0,0,0,.3);
-    border-radius: 5px;    
-    width: 700px; 
+    background-color: #d4ffd4;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    width: 700px;
     z-index: 999;
 }
 
-
-.topCounter{
+.topCounter {
     width: 40px;
     border: none;
     background-color: transparent;
-
 }
 
-.topCounter:focus{
+.topCounter:focus {
     outline: none;
 }
 
 input[type="checkbox"] {
-  transform:scale(1.5, 1.5);
-  margin-right: 5px;
+    transform: scale(1.5, 1.5);
+    margin-right: 5px;
 }
 
-
-/* override default styles for filter_horizontal */
+/* override default styles for filter_horizontal in Gjango admin panel*/
 .selector {
     width: 100%;
 }
 
-.selector .selector-available, .selector .selector-chosen {
+.selector .selector-available,
+.selector .selector-chosen {
     max-width: 45%;
 }
 
 .selector select {
-        width: 100%;
+    width: 100%;
+}
 
-} 
 .selector .selector-available input {
-    width: 80%; 
+    width: 80%;
     margin-left: 8px;
+}
+
+@media (max-width: 1000px) {
+    .card-img-top {
+        height: 45vw;
+    }
 }

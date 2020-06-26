@@ -1,4 +1,4 @@
-{% extends "menu/base.html" %} {% block title %} History {% endblock %} 
+{% extends "orders/base.html" %} {% block title %} History {% endblock %} 
 {% block body %}
 
 <div class="container">
@@ -21,7 +21,6 @@
 
             {% for cart in carts|dictsortreversed:"id" %}
             <tr>
-
                 <td>
                     {{cart.id}}
                 </td>

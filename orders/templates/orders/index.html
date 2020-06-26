@@ -1,4 +1,4 @@
-{% extends "menu/base.html" %} {% block title %} Pizza {% endblock %} {%block filter%}
+{% extends "orders/base.html" %} {% block title %} Pizza {% endblock %} {%block filter%}
 
 <li class="nav-item active">
     <a class="nav-link" data-group="All" href="#">Full menu </a>
@@ -24,36 +24,26 @@
 {%endblock%} {% block body %}
 
 <section class="text-center mb-4">
-    <!--Grid row-->
     <div class="row">
-        <!--Grid column-->
         {% for item in items %}
-
         <div class="col-lg-3 col-md-6 mb-4">
-            <!--Card-->
             <div class="card h-100">
-                <!--Card image-->
                 <img
                     src="static/img/{{ item.group }}.jpg"
                     class="card-img-top"
                     alt="{{ item.group }}"
                 />
-                <!--Card image-->
-
-                <!--Card content-->
                 <div
-                    class="info"
+                    class="info p-2"
                     data-id="{{ item.id }}"
                     data-price="priceForSmall"
                     data-toppings="{{ item.hasToppings}}"
                 >
-                    <!--Category & Title-->
 
                     <h5 class="group">{{ item.group }}</h5>
                     <h5 class="type">{{ item.name }}</h5>
 
                     {% if item.priceForLarge %}
-                    <!--size choice-->
                     <form method="post">
                         <div class="">Select Product Size</div>
                         <input
@@ -74,7 +64,6 @@
                         <label>Large</label>
                     </form>
                     {% endif %}
-                    <!--size choice-->
                     <h4>
                         <strong class="price">{{item.priceForSmall }}</strong>
                     </h4>
@@ -96,7 +85,6 @@
                     </form>
                     {%endif%}
 
-                    <!--Card content-->
                     {% if item.hasToppings%}
                     <div data-id="{{ item.id }}" class="toppings hide p-4">
                         <button type="button" class="close" aria-label="Close">
@@ -216,15 +204,3 @@
 </section>
 {% endblock %}
 
-<!-- 
-                                {% for topping in item.items.all %}
-                                <div
-                                    class="col-lg-4 col-md-4 mb-4"
-                                >
-                                    
-                                      <div class="form-check">
-                                          <label class="form-check-label" for="{{ topping.id }}">{{ topping.name }}</label>
-                                          <input  data-idtop="{{ topping.id }}" type="checkbox"  id="{{ topping.id }}">
-                                    </div>
-                                 </div>
-                                {%endfor%} -->

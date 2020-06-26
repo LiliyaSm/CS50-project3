@@ -83,7 +83,7 @@ $(document).ready(function () {
         toppings.removeClass("hide");
     });
 
-    //add item without toppings to cart, pressing button
+    //add item without toppings to cart
     $(".add-cart").on("submit", function (e) {
         e.preventDefault();
         const card = $(this).closest(".info");
@@ -129,7 +129,6 @@ $(document).ready(function () {
     });
 
     // counter for pizza toppings
-
     $(".topMinus").click(function () {
         let $input = $(this).closest(".toppings").find(".topCounter");
         let $allInputs = $(this).closest(".toppings").find(".amount");
