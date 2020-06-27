@@ -17,4 +17,11 @@ In orders app directory there are files for providing the whole process of handl
 * models.py - the models to work with data and database;
 * view.py module - the views for orders app.
 
+Technologies:
+1. Python 3.7
+2. Django 2.1.5
+3. jQuery
+4. Bootstrap 4
+
+
 Detailed requirements can be found [here](https://docs.cs50.net/web/2020/x/projects/3/project3.html)

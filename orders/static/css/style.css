@@ -137,6 +137,21 @@ input[type="checkbox"] {
     margin-left: 8px;
 }
 
+.card .table td,
+.card .table th {
+    padding: 0;
+}
+
+section {
+    text-align: center;
+}
+
+.item-topping {
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
 @media (max-width: 1000px) {
     .card-img-top {
         height: 45vw;

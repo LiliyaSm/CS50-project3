@@ -23,7 +23,7 @@
 <li class="nav-item"></li>
 {%endblock%} {% block body %}
 
-<section class="text-center mb-4">
+<section class="mb-4">
     <div class="row">
         {% for item in items %}
         <div class="col-lg-3 col-md-6 mb-4">
@@ -113,18 +113,18 @@
                             </tr>
                             {%endif%} {%endfor%} 
                             
-                            {% for price in item.items.all%}
+                            {% for topping in item.items.all%}
 
                             {# check if item has its own price #}
 
-                            {% if price.priceForSmall %}
+                            {% if topping.priceForSmall %}
 
                             <tr>
                                 <td>
-                                    1 extra {{item.name}} portion
+                                    1 extra {{topping.name}} portion
                                 </td>
-                                <td>{{price.priceForSmall}}</td>
-                                <td>{{price.priceForLarge}}</td>
+                                <td>{{topping.priceForSmall}}</td>
+                                <td>{{topping.priceForLarge}}</td>
                             </tr>
                             {%endif%} 
                             {%endfor%}
@@ -132,12 +132,11 @@
 
                         <h3>choose toppings:</h3>
 
-                        {# if item has toppings display toppings' counter 	#}
+                        {# if item has toppings displays toppings' counter#}
 
                         {% if "Pizza" in item.group.dishType %}
-
                         <h3>
-                            toppings amount:
+                            number of toppings:
                             <input
                                 class="topCounter"
                                 type="text"
@@ -153,11 +152,12 @@
                             <div class="row mt-4">
                                 {% for topping in item.items.all %} 
                                 {% if topping.group.dishType == "Toppings" %}
-                                <div
-                                    class="col-lg-4 col-md-4 mb-4 d-flex align-items-center"
+                                <div 
+                                    class="col-4 mb-1 item-topping"
                                 >
-                                    <span>{{ topping.name }}</span>
-                                    <div class="counter ml-3">
+                                    <div><span>{{ topping.name }}</span></div>
+                                    
+                                    <div class="counter ml-auto">
                                         <span class="minus topMinus">–</span>
                                         <input
                                             class="amount"
@@ -178,7 +178,7 @@
                                     <h3>
                                         <span>{{ topping.name }}</span>
                                         <input
-                                            class="checkbox ml-3"
+                                            class="checkbox ml-2"
                                             type="checkbox"
                                             placeholder="0"
                                             value="0"

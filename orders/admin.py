@@ -18,9 +18,9 @@ class AdiminCart(admin.ModelAdmin):
     inlines = (ItemInline,)
     readonly_fields = ['user', 'order_date']
 
-    # filter by name
+    # filter by user name and order number
     search_fields = (
-        "user__username",
+        "user__username", "id"
     )
 
 class AdminItem(admin.ModelAdmin):

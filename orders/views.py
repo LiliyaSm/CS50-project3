@@ -30,6 +30,7 @@ def add_to_cart(request):
 
     item = get_object_or_404(Item, pk=item_id)
 
+    # if item has only "small" price its size is "one size"
     if priceType == "priceForSmall":
         if not getattr(item, "priceForLarge"):
             size = "One size"
@@ -48,12 +49,12 @@ def add_to_cart(request):
         for value in toppings.values():
             count += int(value)
 
-            #try to get price depending on the quantity.
+            #try to get price for topping depending on the quantity.
         try:
             topping_price = get_object_or_404(ToppingsPrice,
                                               item=item, toppingQuantity=count)
             price = getattr(topping_price, priceType)
-            # otherwise get dish own price
+            # otherwise get topping own price
         except Exception as e:
             print(e)
             price = getattr(item, priceType)
@@ -205,15 +206,15 @@ def order_history(request):
 
 
 @login_required(login_url='login')
-def order_detail(request, cart_id):
+def order_detail(request, id):
     """page with old confirmed order"""
     user = request.user
     items_user = ItemOrder.objects.filter(
-        cart__user=user, cart__id=cart_id).exclude(Q(item__group__dishType="Toppings") | Q(item__group__dishType="Extras"))
+        cart__user=user, cart__id=id).exclude(Q(item__group__dishType="Toppings") | Q(item__group__dishType="Extras"))
 
-    total = Cart.objects.get(user=user, id=cart_id).total
+    total = Cart.objects.get(user=user, id=id).total
     items = items_user.select_related('item')
-    return render(request, "orders/cart.html", {'itemorders': items, "total": total, "unconfirmed": False, "cart_id": cart_id})
+    return render(request, "orders/cart.html", {'itemorders': items, "total": total, "unconfirmed": False, "cart_id": id})
 
 
 @login_required(login_url='login')
