@@ -21,6 +21,9 @@ In orders app directory there are files for providing the whole process of handl
 * models.py - the models to work with data and database;
 * view.py module - the views for orders app.
 
+In all directories:
+* apps.py - defines basic configuration settings
+
 Technologies:
 1. Python 3.7
 2. Django 2.1.5

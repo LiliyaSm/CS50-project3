@@ -1,4 +1,3 @@
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -209,10 +208,10 @@ def order_history(request):
 def order_detail(request, id):
     """page with old confirmed order"""
     user = request.user
+    old_cart = get_object_or_404(Cart, user=user, id=id)
+    total = old_cart.total
     items_user = ItemOrder.objects.filter(
         cart__user=user, cart__id=id).exclude(Q(item__group__dishType="Toppings") | Q(item__group__dishType="Extras"))
-
-    total = Cart.objects.get(user=user, id=id).total
     items = items_user.select_related('item')
     return render(request, "orders/cart.html", {'itemorders': items, "total": total, "unconfirmed": False, "cart_id": id})
 

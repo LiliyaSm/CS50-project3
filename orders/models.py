@@ -6,7 +6,6 @@ from decimal import Decimal
 import datetime
 
 
-# Create your models here.
 class dishType(models.Model):
     dishType = models.CharField(max_length=64)
 
@@ -30,8 +29,6 @@ class Item(models.Model):
     priceForLarge = models.DecimalField(
         max_digits=6, decimal_places=2, default=Decimal(0))
         
-
-
     def __str__ (self):
         return f"{self.name} {self.group}"
 
@@ -46,19 +43,8 @@ class Cart(models.Model):
     confirmed = models.BooleanField(default=False)
 
 
-
-    # payment_type = models.CharField(max_length=100, null=True)
-    # payment_id = models.CharField(max_length=100, null=True)
-
-
     def __str__(self):
-        # return "User: {} has items in their cart. Their total is ${}".format(self.user, self.total)
         return f"{self.user} order № {self.id}, date: {self.order_date.strftime('%m/%d/%Y %I:%M:%S %p')}"
-
-    
-
-#     def add_to_cart(self, book_id):
-#         item = get_object_or_404(Item, pk=item_id)
 
 
 class ItemOrder(models.Model):
@@ -91,13 +77,6 @@ class ToppingsPrice(models.Model):
     def __str__(self):
         return f"{self.item}"
 
-# @receiver(post_save, sender=ItemOrder)
-# def update_cart(sender, instance, **kwargs): 
-#     instance.cart.total += instance.calc_price
-#     instance.cart.save()
-
-    # instance.cart.count += instance.quantity
-    # instance.cart.updated = datetime.now()
 
 @receiver(pre_delete, sender=ItemOrder)
 def delete_item(sender, instance, **kwargs):
