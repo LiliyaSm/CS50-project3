@@ -31,4 +31,6 @@ Technologies:
 4. Bootstrap 4
 
 ![database schema](https://www.planttext.com/api/plantuml/img/RLJ1RiCW3Btp5Vn0A-qwJLEbJ9igRUkcPkUA1TOo1OY073BruqSXE42u1BzdntwsINR64cr7qUCxfBv_MMVntZ9X4F87liTx2kOx4Gp0YrRZ0EX2JAk6WSkp0Uv3yuuT1Udxd7eb-inGB4UvkRJJu8XeXQ89UeAGL6AhKgKpIWGlpBDMekHQLRounT7rHkI4hV8db7JTtPhp3RYQ6Gn5LvHBLw5j6DFdIAJbTbhvawbLNVFqWjY7wmQNKGV9G7s8yc4u6MWQaixqe2dJyqI3lSnpmQ6lZCjs3spi4UUqLvfJ3Ucxqx3cZ_pFzLhH6BQsrflofVR21xUYwette-BSuYmoloxBOjp8ixZQq1ltyHcCK3YztcX-6QOJwDESAB4Cg5PPqWDgbFpXMZ0AoMyP3FBFa3gQ_ZkUKRWR8KafCf6_sLmVCMX9WtPCKlV_S5lw1m00)
+
+
 Detailed requirements can be found [here](https://docs.cs50.net/web/2020/x/projects/3/project3.html)
