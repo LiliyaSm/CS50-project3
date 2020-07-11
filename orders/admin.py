@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Item, Cart, ItemOrder
 from .models import Item, dishType, Cart, ItemOrder, ToppingsPrice
 from django.db import models
 
