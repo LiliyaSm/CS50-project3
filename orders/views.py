@@ -14,7 +14,8 @@ from django.contrib import messages
 @login_required(login_url='login')
 def index(request):
     """rendering items on the main page"""
-
+    
+    # OR condition
     items = Item.objects.exclude(
         Q(group__dishType="Toppings") | Q(group__dishType="Extras"))
     return render(request, "orders/index.html",{ "items": items})
